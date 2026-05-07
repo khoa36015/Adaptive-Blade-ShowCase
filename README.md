@@ -12,7 +12,7 @@ Adaptive-Blade cung cấp một giao diện quản lý hiện đại, cho phép 
 - **Task Management:** Giao diện trực quan để đẩy tác vụ, quản lý tệp tin và thực thi lệnh từ xa.
 - **Configuration Builder:** Tích hợp bộ tạo Agent tự động với các tùy chọn tùy chỉnh linh hoạt.
 
-<img src="https://ibb.co/Txr8YSDN">
+<img src="https://i.ibb.co/bM7BQZjG/image.png">
 
 ## 2. Kiến trúc Hệ thống
 
@@ -21,7 +21,7 @@ Hệ thống được xây dựng trên mô hình phân tán nhằm giảm thi�
 - **Agent (Implant):** Module thực thi trên mục tiêu, tối ưu hóa cho môi trường Windows/Linux với thiết kế module hóa.
 - **Redirector:** Lớp đệm biên giúp che giấu địa chỉ IP thực của Team Server và lọc lưu lượng truy cập không mong muốn.
 - **AI Engine:** Hỗ trợ phân tích hành vi và tự động hóa các phản hồi chiến thuật.
-<img src="https://ibb.co/Tqq5rHn4">
+<img src="https://i.ibb.co/7NNFbGTn/image.png">
 ## 3. Kỹ thuật Lẩn tránh Tĩnh (Static Evasion)
 
 Để vượt qua các cơ chế quét tệp tin và phân tích mã nguồn của các giải pháp bảo mật, Adaptive-Blade áp dụng các kỹ thuật sau (đã được tích hợp sẵn trong core builder):
@@ -39,7 +39,7 @@ Giao thức truyền tải được thiết kế để hòa nhập vào lưu lư
 - **Stealth Gating:** Team Server tích hợp cơ chế lọc lưu lượng tại lớp ứng dụng. Chỉ những yêu cầu có User-Agent chính xác, đúng đường dẫn (standardized beacon path) và đi kèm Cookie được mã hóa hợp lệ mới được xử lý. Các yêu cầu không hợp lệ sẽ nhận phản hồi mã lỗi 404 để giả lập một máy chủ web không tồn tại.
 - **Traffic Masking:** Dữ liệu giao tiếp được mã hóa AES và đóng gói trong các yêu cầu HTTP tiêu chuẩn, giả lập các hoạt động cập nhật phần mềm hoặc truy xuất API thông thường.
 - **Infrastructure Hiding:** Sử dụng các Redirector kết hợp với kỹ thuật Domain Fronting (nếu cần thiết) để chuyển hướng lưu lượng, ngăn chặn việc truy vết ngược lại hạ tầng điều khiển trung tâm.
-<img src="https://ibb.co/d0bW0F58">
+<img src="https://i.ibb.co/NdLyh7Zy/image.png">
 ## 4. Cơ chế Duy trì Sự hiện diện (Persistence)
 
 Các phương thức duy trì được lựa chọn dựa trên tiêu chí ít để lại dấu vết (low footprint):
