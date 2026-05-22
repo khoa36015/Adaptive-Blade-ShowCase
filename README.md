@@ -41,7 +41,10 @@ Vị trí dưới đây trình bày khả năng thực thi của Adaptive-Blade 
 - Khởi tạo và kết nối Agent (Beaconing).
 - Thực thi lệnh hệ thống (Shell Command).
 - Tải lên/Tải xuống tệp tin (Upload/Download) mà không bị chặn bởi engine phát hiện hành vi của KES.
-![DEMO](https://s4.ezgif.com/tmp/ezgif-4d5b7ef593600247.gif)
+<a href="https://youtu.be/qrkj7BeVVm4" target="_blank">
+  <img src="https://i.ytimg.com/vi/qrkj7BeVVm4/maxresdefault.jpg" alt="Adaptive Blade C2 Framework Showcase" width="600" />
+</a>
+<p><i>▶️ Nhấp vào ảnh để xem video demo thực tế của Adaptive-Blade.</i></p>
 
 ## 6. Thông tin Liên hệ
 
