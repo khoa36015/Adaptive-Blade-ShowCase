@@ -1,65 +1,54 @@
-# Adaptive-Blade C2 Framework: Technical Overview
+# Adaptive-Blade C2 Framework: Technical ShowCase
 
-Adaptive-Blade là một khung làm việc Chỉ huy và Kiểm soát (Command and Control - C2) được thiết kế cho các hoạt động mô phỏng tấn công nâng cao. Hệ thống tập trung vào việc tối ưu hóa khả năng ẩn mình trước các giải pháp EDR/AV và duy trì tính bí mật trong quá trình truyền tải dữ liệu.
+Adaptive-Blade là một khung làm việc Chỉ huy và Điều khiển (Command and Control - C2) bậc cao, được thiết kế cho các hoạt động mô phỏng Red Team chuyên nghiệp. Hệ thống tập trung vào việc vượt qua các giải pháp EDR/AV hiện đại (như Kaspersky Endpoint Security) và duy trì tính vững chắc trong môi trường doanh nghiệp.
 
-**Lưu ý quan trọng:** Đây là một dự án nghiên cứu tập trung vào thực thi các hoạt động Red Team (Red Team Operations) và mô phỏng lại các hành vi tấn công thực tế. Mục tiêu cốt lõi của dự án không dừng lại ở việc nghiên cứu kỹ thuật lý thuyết chuyên sâu, mà là vận dụng thực tiễn để hiểu rõ phương thức hoạt động của các mối đe dọa, từ đó xây dựng các chiến lược phát hiện và ngăn chặn hiệu quả ("Biết để Ngăn chặn"). Toàn bộ các kỹ thuật được liệt kê dưới đây đều đã được triển khai thực tế, kiểm chứng và vận hành ổn định trong môi trường mô phỏng.
+Lưu ý: Đây là dự án nghiên cứu nhằm mục đích bảo mật và đánh giá năng lực hệ thống. Toàn bộ các kỹ thuật mô tả dưới đây đều đã được triển khai thực tế và kiểm chứng ổn định.
 
-## 1. Giao diện Quản lý (Web UI)
+## 1. Thành phần Hệ thống
 
-Adaptive-Blade cung cấp một giao diện quản lý hiện đại, cho phép điều khiển tập trung toàn bộ hạ tầng C2:
+Hệ thống được cấu trúc thành 3 phần chính để tối ưu hóa hiệu suất và khả năng ẩn mình:
 
-- **Dashboard:** Theo dõi trạng thái thời gian thực của các Agent, tài nguyên hệ thống và các tiến trình đang thực thi.
-- **Task Management:** Giao diện trực quan để đẩy tác vụ, quản lý tệp tin và thực thi lệnh từ xa.
-- **Configuration Builder:** Tích hợp bộ tạo Agent tự động với các tùy chọn tùy chỉnh linh hoạt.
+- Team Server (Backend): Phát triển trên nền tảng Python, quản lý phiên (session) qua token đặc hiệu (X-Session-Token), tích hợp engine biên dịch động với kỹ thuật chèn junk code metamorphic.
+- CLI Client: Giao diện điều khiển dòng lệnh (Interactive CLI) viết bằng Python, hỗ trợ tự động hóa (Auto-Injection) và quản lý Agent linh hoạt.
+- Agent (Implant): Module thực thi viết bằng C++, tối ưu hóa cho môi trường Windows với kiến trúc không phụ thuộc vào IAT (Import Address Table) cho các API nhạy cảm.
 
-<img src="https://i.ibb.co/bM7BQZjG/image.png">
+## 2. Kỹ thuật Lẩn tránh Nâng cao (Advanced Evasion)
 
-## 2. Kiến trúc Hệ thống
+Điểm mạnh cốt lõi của Adaptive-Blade nằm ở khả năng "tàng hình" trước các cơ chế phát hiện hành vi (Behavioral Analysis):
 
-Hệ thống được xây dựng trên mô hình phân tán nhằm giảm thiểu rủi ro bị phát hiện và tăng cường khả năng phục hồi:
-- **Team Server:** Trung tâm quản lý viết bằng ngôn ngữ Go, điều phối tác vụ và quản lý trạng thái tác nhân (agent).
-- **Agent (Implant):** Module thực thi trên mục tiêu, tối ưu hóa cho môi trường Windows/Linux với thiết kế module hóa.
-- **Redirector:** Lớp đệm biên giúp che giấu địa chỉ IP thực của Team Server và lọc lưu lượng truy cập không mong muốn.
-- **AI Engine:** Hỗ trợ phân tích hành vi và tự động hóa các phản hồi chiến thuật.
-<img src="https://i.ibb.co/7NNFbGTn/image.png">
-## 3. Kỹ thuật Lẩn tránh Tĩnh (Static Evasion)
+- Indirect Syscalls (DJB2 Hashing): Sử dụng lệnh gọi hệ thống gián tiếp để thao tác với bộ nhớ và tiến trình. Kỹ thuật này hoàn toàn vô hiệu hóa các cơ chế Hooking của EDR/AV tại lớp User-mode (ntdll.dll).
+- Memory Injection (NtMapViewOfSection): Thay vì sử dụng WriteProcessMemory truyền thống dễ bị phát hiện, Agent sử dụng Sections để map vùng nhớ, kết hợp với NtQueueApcThread để thực thi code, giúp tránh khỏi các dấu vết "Private/Unbacked Memory".
+- PPID Spoofing: Khởi tạo tiến trình con (như werfault.exe) dưới danh nghĩa các tiến trình tin cậy (như explorer.exe) để duy trì một cây tiến trình (Process Tree) hợp lệ.
+- Sleep Masking: Mã hóa vùng nhớ thực thi của Agent trong thời gian chờ (Sleep) để tránh các cơ chế quét bộ nhớ (Memory Scanning) của AV.
 
-Để vượt qua các cơ chế quét tệp tin và phân tích mã nguồn của các giải pháp bảo mật, Adaptive-Blade áp dụng các kỹ thuật sau (đã được tích hợp sẵn trong core builder):
+## 3. Giao thức Truyền tải và OPSEC (Network Stealth)
 
-- **Centralized Obfuscation:** Toàn bộ các biến nhạy cảm (C2 URL, AES Key, User-Agent) được mã hóa bằng thuật toán XOR kết hợp Hex Encoding trước khi biên dịch. Quá trình giải mã chỉ diễn ra trong bộ nhớ tại thời điểm thực thi.
-- **Indirect Syscalls:** Thay vì sử dụng các hàm API Windows chuẩn (thường bị EDR hook), agent thực hiện các lệnh gọi hệ thống gián tiếp để thao tác với bộ nhớ và tiến trình.
-- **Memory Injection Tactics:** Sử dụng các kỹ thuật tiên tiến như Module Stomping, Stack Spoofing và Mockingjay để thực thi mã trong không gian bộ nhớ của các tiến trình tin cậy.
-- **Anti-Analysis Heuristics:** Kiểm tra môi trường thực thi (dung lượng RAM, ổ đĩa, số lượng CPU) để nhận diện môi trường Sandbox hoặc máy ảo của các nhà phát triển bảo mật, từ đó tự động điều chỉnh hành vi hoặc chấm dứt thực thi để bảo vệ mã nguồn.
+Hệ thống giao tiếp được thiết kế để hòa nhập hoàn toàn vào lưu lượng mạng thông thường:
 
-## 4. Kỹ thuật Lẩn tránh Mạng (Network Evasion)
+- WinHTTP Native Engine: Sử dụng stack mạng WinHTTP nguyên bản của Windows thay vì các thư viện bên thứ ba, giúp tạo ra dấu vân tay mạng (JA3/TLS) giống hệt với các tiến trình hệ thống hợp lệ.
+- Malleable C2 Profiles: Cấu hình linh hoạt Header, URI và cấu trúc dữ liệu (HTML/JSON) thông qua profile.json. Toàn bộ dữ liệu beacon được mã hóa AES và che giấu trong các yêu cầu HTTP tiêu chuẩn.
+- Stealth Gating: Hệ thống chỉ chấp nhận các kết nối có chữ ký và token hợp lệ. Các yêu cầu truy cập bất thường từ Sandbox hoặc Crawler sẽ nhận phản hồi 404 giả lập.
 
-Giao thức truyền tải được thiết kế để hòa nhập vào lưu lượng mạng thông thường và đã được kiểm chứng qua các hệ thống giám sát lưu lượng (IDS/IPS):
+## 4. Chống phân tích Pháp y (Anti-Forensics)
 
-- **WinHTTP Implementation:** Trên nền tảng Windows, agent sử dụng thư viện WinHTTP nguyên bản thay vì stack mạng mặc định của Go. Điều này giúp tránh việc tạo ra các dấu vân tay JA3 đặc trưng, vốn thường bị các hệ thống IDS/IPS phát hiện.
-- **Stealth Gating:** Team Server tích hợp cơ chế lọc lưu lượng tại lớp ứng dụng. Chỉ những yêu cầu có User-Agent chính xác, đúng đường dẫn (standardized beacon path) và đi kèm Cookie được mã hóa hợp lệ mới được xử lý. Các yêu cầu không hợp lệ sẽ nhận phản hồi mã lỗi 404 để giả lập một máy chủ web không tồn tại.
-- **Traffic Masking:** Dữ liệu giao tiếp được mã hóa AES và đóng gói trong các yêu cầu HTTP tiêu chuẩn, giả lập các hoạt động cập nhật phần mềm hoặc truy xuất API thông thường.
-- **Infrastructure Hiding:** Sử dụng các Redirector kết hợp với kỹ thuật Domain Fronting (nếu cần thiết) để chuyển hướng lưu lượng, ngăn chặn việc truy vết ngược lại hạ tầng điều khiển trung tâm.
-<img src="https://i.ibb.co/NdLyh7Zy/image.png">
-## 4. Cơ chế Duy trì Sự hiện diện (Persistence)
+- Payload Inflation: Tự động thổi phồng kích thước payload (.bin) từ 5MB đến 10MB với entropy biến thiên để vượt qua các engine quét tĩnh giới hạn kích thước.
+- Bait String Injection: Chèn các chuỗi ký tự từ các thư viện nổi tiếng (như Qt5, SQLite) vào payload để làm giả lập một phần mềm thương mại.
+- Advanced Melt: Cơ chế tự hủy (Self-Deletion) xóa sạch dấu vết Agent trên đĩa cứng ngay sau khi hoàn thành nhiệm vụ hoặc theo lệnh điều khiển.
 
-Các phương thức duy trì được lựa chọn dựa trên tiêu chí ít để lại dấu vết (low footprint):
-- **Ghost Task:** Tạo các tác vụ lập lịch không hiển thị trong các công cụ quản lý thông thường.
-- **Phantom COM:** Sử dụng các đối tượng COM để kích hoạt lại tác nhân khi hệ thống có thay đổi trạng thái.
-- **WMI Event Subscription:** Tận dụng Windows Management Instrumentation để thực thi mã khi các sự kiện hệ thống cụ thể xảy ra.
+## 5. Video Showcase (Demonstration)
 
-## 5. Chính sách Công bố và Tiếp cận Mã nguồn
+Vị trí dưới đây trình bày khả năng thực thi của Adaptive-Blade trên môi trường có cài đặt Kaspersky Endpoint Security (KES). Video bao gồm các thao tác:
+- Khởi tạo và kết nối Agent (Beaconing).
+- Thực thi lệnh hệ thống (Shell Command).
+- Tải lên/Tải xuống tệp tin (Upload/Download) mà không bị chặn bởi engine phát hiện hành vi của KES.
 
-Vì tính chất nhạy cảm của các kỹ thuật lẩn tránh nâng cao (Advanced Evasion) được triển khai trong dự án này, mã nguồn đầy đủ của Adaptive-Blade không được công khai rộng rãi. Quyết định này nhằm ngăn chặn việc các tác nhân xấu lợi dụng công cụ cho mục đích tấn công bất hợp pháp, gây ảnh hưởng đến an ninh mạng của các tổ chức.
-
-Mã nguồn và các tài liệu kỹ thuật chi tiết chỉ được cung cấp cho mục đích nghiên cứu học thuật, kiểm thử bảo mật chuyên nghiệp hoặc phục vụ quá trình tuyển dụng trong các môi trường có sự kiểm soát.
+[ PLACEHOLDER: CHÈN VIDEO SHOWCASE TẠI ĐÂY ]
 
 ## 6. Thông tin Liên hệ
 
-Đối với bộ phận nhân sự (HR) hoặc các chuyên gia bảo mật có nhu cầu trao đổi trực tiếp, tìm hiểu sâu hơn về kiến trúc dự án hoặc đánh giá năng lực chuyên môn, vui lòng liên hệ qua địa chỉ email dưới đây:
+Dự án này được phát triển cho mục đích khảo sát và tuyển dụng chuyên môn. Quý nhà tuyển dụng hoặc chuyên gia bảo mật quan tâm đến kiến trúc chi tiết và mã nguồn có thể liên hệ:
 
-- **Email:** khoa36015@gmail.com
-- **Mục đích:** Trao đổi công việc, yêu cầu xem mã nguồn dự án (vui lòng đính kèm thông tin tổ chức/nhà tuyển dụng).
+- Email: khoa36015@gmail.com
+- Lĩnh vực: Red Team Operations, Malware Development, Evasion Techniques.
 
-## 7. Kết luận
-
-Adaptive-Blade không chỉ là một công cụ thực thi lệnh từ xa mà là một nền tảng nghiên cứu về tính bí mật trong an ninh mạng. Mọi tính năng được phát triển đều ưu tiên yếu tố OPSEC (Operations Security), đảm bảo rằng các cuộc mô phỏng tấn công phản ánh đúng năng lực của các nhóm đe dọa thực tế trong môi trường doanh nghiệp hiện đại.
+Kết luận: Adaptive-Blade không chỉ là một công cụ C2, mà là một minh chứng cho việc vận dụng các kỹ thuật Low-level để vượt qua các rào cản bảo mật hiện đại nhất hiện nay.
