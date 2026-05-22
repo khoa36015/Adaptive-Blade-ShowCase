@@ -41,7 +41,7 @@ Vị trí dưới đây trình bày khả năng thực thi của Adaptive-Blade 
 - Khởi tạo và kết nối Agent (Beaconing).
 - Thực thi lệnh hệ thống (Shell Command).
 - Tải lên/Tải xuống tệp tin (Upload/Download) mà không bị chặn bởi engine phát hiện hành vi của KES.
-<video src="https://github.com/khoa36015/Adaptive-Blade-ShowCase/raw/refs/heads/main/showcase.mp4" width="100%" controls>
+![DEMO](./showcase.mp4)
 
 ## 6. Thông tin Liên hệ
 
